@@ -1,0 +1,16 @@
+{
+    "name": "markdown",
+    "description": "Transform Markdown into HTML.",
+    "version": "1.0.0",
+    "main": "./index.js",
+    "scripts": {
+        "eslint": "eslint . --ext .js --config node_modules/eslint-config/index.js",
+        "test": "yarn eslint && NODE_ENV=test mocha *.spec.js"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "chai": "^3.5.0",
+        "eslint": "^7.7.0",
+        "mocha": "^5.1.1"
+    }
+}

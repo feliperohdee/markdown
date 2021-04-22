@@ -19,7 +19,7 @@ const encodeAttr = str => {
 
 /** Parse Markdown into an HTML String. */
 module.exports = function parse(md, prevLinks) {
-    let tokenizer = /((?:^|\n+)(?:\n---+|\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n+)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n+)([^\s].*)\n(-{3,}|={3,})(?:\n+|$))|(?:(?:^|\n+)(#{1,6})\s*(.+)(?:\n+|$))|(?:`([^`].*?)`)|(\n{2,}|__|\*\*|\*|~~)/gm,
+    let tokenizer = /((?:^|\n)(?:\* \*(?: \*)+)\n)|(?:^``` *(\w*)\n([\s\S]*?)\n```$)|((?:(?:^|\n)(?:\t|  {2,}).+)+\n*)|((?:(?:^|\n)([>*+-]|\d+\.)\s+.*)+)|(?:!\[([^\]]*?)\]\(([^)]+?)\))|(\[)|(\](?:\(([^)]+?)\))?)|(?:(?:^|\n)([^\s].*)\n(-{3,}|={3,})(?:\n|$))|(?:(?:^|\n)(#{1,6})\s*(.+)(?:\n|$))|(?:`([^`].*?)`)|(\n{2,}|__|\*\*|\*|~~)/gm,
         context = [],
         out = '',
         links = prevLinks || {},
@@ -60,7 +60,7 @@ module.exports = function parse(md, prevLinks) {
     md = md.replace(/^\[(.+?)\]:\s*(.+)$/gm, (s, name, url) => {
         links[name.toLowerCase()] = url;
         return '';
-    }).replace(/^\n+|\n+$/g, '');
+    }).replace(/^\n|\n$/g, '');
 
     while ((token = tokenizer.exec(md))) {
         prev = md.substring(last, token.index);
@@ -71,7 +71,7 @@ module.exports = function parse(md, prevLinks) {
         }
         // Code/Indent blocks:
         else if (t = (token[3] || token[4])) { /* eslint-disable-line */ 
-            chunk = '<pre class="code ' + (token[4] ? 'poetry' : token[2].toLowerCase()) + '"><code' + (token[2] ? ` class="language-${token[2].toLowerCase()}"` : '') + '>' + outdent(encodeAttr(t).replace(/^\n+|\n+$/g, '')) + '</code></pre>';
+            chunk = '<pre class="code ' + (token[4] ? 'poetry' : token[2].toLowerCase()) + '"><code' + (token[2] ? ` class="language-${token[2].toLowerCase()}"` : '') + '>' + outdent(encodeAttr(t).replace(/^\n|\n$/g, '')) + '</code></pre>';
         }
         // > Quotes, -* lists:
         else if (t = token[6]) { /* eslint-disable-line */ 
@@ -114,5 +114,5 @@ module.exports = function parse(md, prevLinks) {
         out += chunk;
     }
 
-    return (out + md.substring(last) + flush()).replace(/^\n+|\n+$/g, '');
+    return (out + md.substring(last) + flush()).replace(/^\n|\n$/g, '');
 };

@@ -4,7 +4,7 @@ const {
 
 const md = require('./');
 
-describe('md()', () => {
+describe('index.js', () => {
 	describe('text formatting', () => {
 		it('parses bold with **', () => {
 			expect(md('I **like** tiny libraries')).to.equal('I <strong>like</strong> tiny libraries');
@@ -105,6 +105,14 @@ describe('md()', () => {
 		it('parses three new lines as line breaks', () => {
 			expect(md('Something with\n\n\na line break')).to.equal('Something with<br /><br />a line break');
 		});
+
+		it('parses two new lines as line breaks following by h1', () => {
+			expect(md('Something with\n\n#title')).to.equal('Something with<br /><h1>title</h1>');
+		});
+		
+		it('parses two three lines as line breaks following by h1', () => {
+			expect(md('Something with\n\n\n#title')).to.equal('Something with<br /><br /><h1>title</h1>');
+		});
 	});
 
 	describe('code & quotes', () => {
@@ -141,16 +149,12 @@ describe('md()', () => {
 	});
 
 	describe('horizontal rules', () => {
-		it('should parse ---', () => {
-			expect(md('foo\n\n---\nbar')).to.equal('foo<hr />bar');
-			expect(md('foo\n\n----\nbar'), '----').to.equal('foo<hr />bar');
-			expect(md('> foo\n\n---\nbar')).to.equal('<blockquote>foo</blockquote><hr />bar');
-		});
-
 		it('should parse * * *', () => {
 			expect(md('foo\n* * *\nbar')).to.equal('foo<hr />bar');
+			expect(md('foo\n\n* * *\nbar')).to.equal('foo<br /><hr />bar');
+			expect(md('foo\n\n* * *\n\n\nbar')).to.equal('foo<br /><hr /><br />bar');
 			expect(md('foo\n* * * *\nbar'), '* * * *').to.equal('foo<hr />bar');
-			expect(md('> foo\n\n* * *\nbar')).to.equal('<blockquote>foo</blockquote><hr />bar');
+			expect(md('> foo\n\n* * *\nbar')).to.equal('<blockquote>foo</blockquote><br /><hr />bar');
 		});
 	});
 
